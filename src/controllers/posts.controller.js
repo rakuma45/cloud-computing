@@ -3,8 +3,6 @@ const prisma = new PrismaClient();
 const jwt = require('jsonwebtoken');
 
 const getAllPost = async (req, res) => {
- 
-
   try {
     const posts = await prisma.post.findMany({
       include: {
@@ -112,16 +110,13 @@ const searchByTag = async (req, res) => {
 }
 
 const addPost = async (req, res) => {
-  console.log("enter addpost")
   const token = req.headers.authorization;
   if (!token) {
     res.status(401).json({ error: 'No authorization token provided' });
   } else {
     try {
-      console.log("enter try")
       const splitToken = token.split(" ")[1];
         const decoded = jwt.verify(splitToken, 'secret');
-        console.log("verified")
         const { username, title, description, imageUrl, priceStartFrom, designTypeId, designStyleId } = req.body;
         // Get the user ID from the decoded JWT token
         const user = await prisma.user.findUnique({ where: { username } });
@@ -135,10 +130,7 @@ const addPost = async (req, res) => {
           select:{
             id: true
           },
-          
         })
-    
-        // Create a new post using Prisma's create method
         const newPost = await prisma.post.create({
           data: {
             title,
@@ -148,7 +140,6 @@ const addPost = async (req, res) => {
             designTypeId,
             designStyleId,
             authorId: authorId.id
-            // Associate the post with the logged-in user
           },
         });
     
